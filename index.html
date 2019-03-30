@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>organization</title>
+</head>
+<body>
+	<div>
+		<input type="radio" name="getCodeMethod" value="single" checked> 
+		输入8位：<input type="text" id="inputNum" /><br>
+
+		<input type="radio" name="getCodeMethod" value="random"> 输入生成的数量：<input type="text" id="getNum" /><br>
+
+		<button id="doit">生成</button><br>
+
+
+		结果：<div id="result"></div>
+	</div>
+
+	<script src="./jquery-3.3.1.min.js"></script>
+	<script type="text/javascript">
+		var weightList = [3,7,9,10,5,8,4,2];
+
+		$("#doit").click(function() {
+			var getMethodValue = $("input[name='getCodeMethod']:checked").val();
+			var result = null;
+			var flag = true;
+			if (getMethodValue == "single") {
+				var input = $("#inputNum").val();
+				flag = true;
+			} else {
+				var input = $("#getNum").val();
+				flag = false;
+			}
+			result = getOrganizationCode(input, flag);
+			$("#result").html(result);
+		});
+
+
+
+		function getOrganizationCode(input, isSingle) {
+			if (isSingle) {
+				if (input.length != 8) {
+					alert("请输入8位本地码！");
+					return;
+				}
+				input = input.toUpperCase();
+				var inputTemp = input.split("");
+				var sum = 0;
+				for(var i in inputTemp) {
+					var num = parseInt(inputTemp[i], 36);
+					sum = sum + num * weightList[i];
+				}
+				var checkNum = 11 - sum % 11;
+				if (checkNum == 10) {
+					checkNum = "X";
+				} else if (checkNum == 11) {
+					checkNum = 0
+				}
+				return input + "-" + checkNum;
+				
+			} else {
+				var resultList = "";
+				for(var j=0; j<parseInt(input); j++) {
+					var randomNum = getRandomNum();
+					resultList = resultList + getOrganizationCode(randomNum, true) + "<br>";
+				}
+				return resultList;
+			}
+		}
+
+		function getRandomNum() {
+			return Math.random().toString(36).substr(2,8);
+		}
+
+	</script>
+</body>
+</html>
